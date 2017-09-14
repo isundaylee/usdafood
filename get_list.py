@@ -4,19 +4,8 @@ import sqlite3
 import redis
 import requests
 
+from scraper.utils import env
 from scraper.scheduler import Scheduler
-
-################################################################################
-# Util logic
-################################################################################
-
-def env(name):
-    try:
-        value = os.environ[name]
-    except KeyError: 
-        print('Environment variable ' + name + ' needs to be set! ')
-        exit()
-    return value
 
 ################################################################################
 # Scraping logic
