@@ -1,3 +1,4 @@
+import os
 import sys
 import sqlite3
 import redis
@@ -6,28 +7,28 @@ import requests
 from scraper.scheduler import Scheduler
 
 ################################################################################
-# Main function logic
+# Util logic
 ################################################################################
 
-def usage():
-    print('Usage: python get_list.py API_KEY')
-
-if len(sys.argv) < 2:
-    usage()
-    exit()
-
-API_KEY = sys.argv[1]
-PER_PAGE = 500
+def env(name):
+    try:
+        value = os.environ[name]
+    except KeyError: 
+        print('Environment variable ' + name + ' needs to be set! ')
+        exit()
+    return value
 
 ################################################################################
 # Scraping logic
 ################################################################################
 
+PER_PAGE = 500
+
 def get_page(page_num):
     offset = page_num * PER_PAGE
 
     r = requests.get('https://api.nal.usda.gov/ndb/list', params={
-        'api_key': API_KEY,
+        'api_key': env('DATA_GOV_API_KEY'),
         'format': 'json',
         'lt': 'f',
         'max': PER_PAGE,
@@ -41,7 +42,7 @@ def get_page(page_num):
 # Job logic
 ################################################################################
 
-scheduler = Scheduler('localhost', redis_db=100)
+scheduler = Scheduler(env('SCHEDULER_HOST'), redis_db=int(env('SCHEDULER_DB')))
 
 current_page = 0
 total_count = 0
