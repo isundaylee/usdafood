@@ -25,7 +25,7 @@ def get_page(page_num):
         'sort': 'id'
     })
 
-    return map(lambda x: int(x['id']), r.json()['list']['item'])
+    return map(lambda x: x['id'], r.json()['list']['item'])
 
 ################################################################################
 # Job logic
