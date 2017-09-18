@@ -21,6 +21,18 @@ class Scheduler:
 
         return food_id
 
+    def claim_lost(self):
+        everything = set(self.r.zrange('food_ids', 0, -1))
+        queue = set(self.r.zrange('queue', 0, -1))
+        done = set(self.r.zrange('done', 0, -1))
+
+        lost = everything - queue - done
+
+        for l in lost:
+            self.enqueue(l.decode())
+
+        print('Reclaimed %d food items lost in progress' % (len(lost)))
+
     def submit(self, food_id, food_data):
         print("Submitting food %s" % food_id)
         self.r.set('detail_' + food_id, json.dumps(food_data))

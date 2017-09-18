@@ -41,9 +41,11 @@ def get_items(food_ids):
 ################################################################################
 
 BATCH_SIZE = 50
-DELAY = 5
+DELAY = 0
 
 scheduler = Scheduler(env('SCHEDULER_HOST'), redis_db=int(env('SCHEDULER_DB')))
+
+scheduler.claim_lost()
 
 while True:
     batch_ids = []
@@ -53,6 +55,10 @@ while True:
         if food_id is None:
             break
         batch_ids.append(food_id)
+
+    if len(batch_ids) == 0:
+        print("We're done!")
+        break
 
     foods = get_items(batch_ids)
     if foods is None:
